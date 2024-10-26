@@ -159,7 +159,7 @@ class PushViewSet(viewsets.ViewSet):
             else:
                 pushes = pushes.filter(author__iexact=author)
         
-        author_contains = filter_params.get("author_contains")
+        author_contains = filter_params.get("author_Contains")
         if author_contains:
             if author_contains.startswith("-"):
                author_contains = author_contains[1::]
