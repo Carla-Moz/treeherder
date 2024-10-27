@@ -150,14 +150,27 @@ class PushViewSet(viewsets.ViewSet):
                     {"detail": "Invalid id__in specification"}, status=HTTP_400_BAD_REQUEST
                 )
             pushes = pushes.filter(id__in=id_in_list)
-
+        
         author = filter_params.get("author")
-        if author:
+        author_contains = filter_params.get("author_contains")
+
+        # Assuming only one of 'author' or 'author_contains' 
+        # will be used per request, or even if both are included, 
+        # 'author_contains' is prioritized for its flexible partial matching. 
+        # 'author' filter will only apply if 'author_contains' is absent.
+        # This can help maintain consistency and prevent filtering conflicts.
+        if author_contains:
+            if author_contains.startswith("-"):
+                author_contains = author_contains[1:]
+                pushes = pushes.exclude(author__icontains=author_contains)
+            else:    
+                pushes = pushes.filter(author__icontains=author_contains)
+        elif author:
             if author.startswith("-"):
-                author = author[1::]
-                pushes = pushes.exclude(author=author)
-            else:
-                pushes = pushes.filter(author=author)
+                author = author[1:]
+                pushes = pushes.exclude(author__iexact=author)
+            else: 
+                pushes = pushes.filter(author__iexact=author)
 
         if filter_params.get("hide_reviewbot_pushes") == "true":
             pushes = pushes.exclude(author="reviewbot")
