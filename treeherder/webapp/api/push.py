@@ -150,7 +150,8 @@ class PushViewSet(viewsets.ViewSet):
                     {"detail": "Invalid id__in specification"}, status=HTTP_400_BAD_REQUEST
                 )
             pushes = pushes.filter(id__in=id_in_list)
-
+        
+        filter_params = {key.lower(): value for key, value in request.GET.items()}
         author = filter_params.get("author")
         if author:
             if author.startswith("-"):
@@ -159,7 +160,7 @@ class PushViewSet(viewsets.ViewSet):
             else:
                 pushes = pushes.filter(author__iexact=author)
         
-        author_contains = filter_params.get("author_Contains")
+        author_contains = filter_params.get("author_contains")
         if author_contains:
             if author_contains.startswith("-"):
                author_contains = author_contains[1::]
