@@ -16,6 +16,7 @@ from django.core.validators import MinLengthValidator
 from django.db import models, transaction
 from django.db.models import Count, Max, Min, Q, Subquery
 from django.contrib.postgres.search import TrigramSimilarity
+from django.contrib.postgres.search import SearchVectorField
 from django.db.utils import ProgrammingError
 from django.forms import model_to_dict
 from django.utils import timezone
@@ -185,6 +186,7 @@ class Commit(models.Model):
     revision = models.CharField(max_length=40, db_index=True)
     author = models.CharField(max_length=150)
     comments = models.TextField()
+    searchable_data = SearchVectorField(null=True)
 
     class Meta:
         db_table = "commit"
